@@ -7,8 +7,10 @@ When setting up your Zoom Transcript MCP Server as an AMP integration, use the f
 | Field | Value |
 |-------|-------|
 | Server Name | `zoom-transcript-mcp` |
-| Command or URL | `http://localhost:3000` |
+| Command or URL | `https://your-ngrok-url.ngrok.io` |
 | Arguments | *Leave empty* |
+
+**IMPORTANT**: AMP cannot connect to localhost URLs. You must use a public URL (see ngrok-setup.md).
 
 ## Environment Variables
 
