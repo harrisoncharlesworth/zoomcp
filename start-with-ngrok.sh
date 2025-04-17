@@ -16,7 +16,7 @@ sleep 3
 
 # Start ngrok
 echo "Starting ngrok to create a public URL..."
-ngrok http 3000
+ngrok http 3001
 
 # When ngrok is terminated, also terminate the server
 trap "kill $SERVER_PID" EXIT
