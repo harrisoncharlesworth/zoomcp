@@ -7,6 +7,7 @@
 require('dotenv').config();
 const express = require('express');
 const { zoomRouter } = require('./routes/zoom');
+const { eventsRouter, broadcastEvent } = require('./routes/events');
 const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -21,8 +22,38 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/zoom', zoomRouter);
+app.use('/api/events', eventsRouter);
+
+// Create global broadcast event function to avoid circular dependencies
+global.mcp = global.mcp || {};
+global.mcp.broadcastEvent = broadcastEvent;
 
 // AMP compatible endpoints
+app.get('/amp/events', (req, res) => {
+  // Set headers for SSE with AMP compatibility
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*'
+  });
+
+  // Send an initial connection message with AMP version
+  res.write(`data: ${JSON.stringify({
+    version: '0.1',
+    content: { type: 'connection', message: 'Connected to Zoom Transcript MCP events' }
+  })}\n\n`);
+
+  // Use the existing clients collection from the eventsRouter module
+  const { clients } = require('./routes/events');
+  clients.add(res);
+
+  // Remove client when connection closes
+  req.on('close', () => {
+    clients.delete(res);
+  });
+});
+
 app.get('/amp/zoom/summary', async (req, res) => {
   try {
     const { meetingId, date, participant } = req.query;

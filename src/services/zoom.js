@@ -114,6 +114,15 @@ const parseTranscript = (rawTranscript) => {
  * @returns {Promise<Object>} - Meeting summary
  */
 const getMeetingSummary = async (meetingId, date, participant) => {
+  // Broadcast event that summary generation has started
+  if (global.mcp && global.mcp.broadcastEvent) {
+    global.mcp.broadcastEvent({
+      type: 'summary_started',
+      meetingId,
+      timestamp: new Date().toISOString()
+    });
+  }
+  
   const transcript = await fetchTranscript(meetingId);
   
   // Filter by participant if specified
@@ -157,7 +166,7 @@ const getMeetingSummary = async (meetingId, date, participant) => {
     .sort((a, b) => sentences.indexOf(a.sentence) - sentences.indexOf(b.sentence))
     .map(item => item.sentence);
   
-  return {
+  const summaryResult = {
     meetingId,
     participants: transcript.participants,
     summary: topSentences.join(' '),
@@ -165,6 +174,18 @@ const getMeetingSummary = async (meetingId, date, participant) => {
     totalEntries: transcript.entries.length,
     filteredEntries: filteredEntries.length
   };
+  
+  // Broadcast event that summary generation is complete
+  if (global.mcp && global.mcp.broadcastEvent) {
+    global.mcp.broadcastEvent({
+      type: 'summary_completed',
+      meetingId,
+      participants: transcript.participants.length,
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  return summaryResult;
 };
 
 /**

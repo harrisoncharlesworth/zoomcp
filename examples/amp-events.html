@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html u26a1>
+<head>
+  <meta charset="utf-8">
+  <title>Zoom Transcript MCP Events Example</title>
+  <link rel="canonical" href="https://example.com/amp-events.html">
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
+  <script async custom-element="amp-list" src="https://cdn.ampproject.org/v0/amp-list-0.1.js"></script>
+  <script async custom-element="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
+  <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
+  <style amp-custom>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .container {
+      padding: 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    .event-list {
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      height: 300px;
+      overflow-y: auto;
+    }
+    .event-item {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border-left: 3px solid #0066cc;
+      background-color: #f0f0f0;
+    }
+    .timestamp {
+      color: #666;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Zoom Transcript MCP Real-time Events</h1>
+  
+  <div class="container">
+    <h2>Live Events</h2>
+    <p>This page demonstrates real-time SSE (Server-Sent Events) from the Zoom Transcript MCP server.</p>
+    
+    <!-- Event log display -->
+    <div class="event-list" id="eventLog">
+      <div class="event-item">
+        <p><strong>Ready</strong> - Waiting for events...</p>
+        <p class="timestamp">[Live events will appear here]</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <h2>How to Test</h2>
+    <ol>
+      <li>Ensure your MCP server is running at localhost:3000</li>
+      <li>Connect to the events endpoint from an AMP application</li>
+      <li>Events will appear in real-time above</li>
+    </ol>
+    <p>The MCP server will send events for new meeting transcripts, summaries, and other activities.</p>
+  </div>
+  
+  <!-- Simulated events for demonstration when no real events are coming in -->
+  <script type="text/javascript">
+    // This script is for demo purposes when viewing the HTML file directly
+    // In AMP, you would use the proper SSE endpoint
+    
+    if (!document.querySelector('html').hasAttribute('u26a1')) {
+      const eventLog = document.getElementById('eventLog');
+      
+      function addEvent(event) {
+        const eventItem = document.createElement('div');
+        eventItem.className = 'event-item';
+        
+        const content = document.createElement('p');
+        content.innerHTML = `<strong>${event.type}</strong> - ${event.message}`;
+        
+        const timestamp = document.createElement('p');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString();
+        
+        eventItem.appendChild(content);
+        eventItem.appendChild(timestamp);
+        eventLog.appendChild(eventItem);
+        
+        // Auto-scroll to bottom
+        eventLog.scrollTop = eventLog.scrollHeight;
+      }
+      
+      // Simulate some events
+      setTimeout(() => {
+        addEvent({ type: 'connection', message: 'Connected to Zoom Transcript MCP events' });
+      }, 1000);
+      
+      setTimeout(() => {
+        addEvent({ type: 'transcript', message: 'New transcript available for meeting ID: 123456789' });
+      }, 3000);
+      
+      setTimeout(() => {
+        addEvent({ type: 'summary', message: 'Summary generated for meeting ID: 123456789' });
+      }, 5000);
+      
+      setTimeout(() => {
+        addEvent({ type: 'action_items', message: '3 action items extracted from meeting ID: 123456789' });
+      }, 7000);
+    }
+  </script>
+</body>
+</html>
