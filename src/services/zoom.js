@@ -32,8 +32,17 @@ const generateZoomToken = () => {
  * @param {string} meetingId - Zoom meeting ID
  * @returns {Promise<Object>} - Meeting transcript data
  */
+const { getMockTranscript } = require('./mock-zoom-data');
+
 const fetchTranscript = async (meetingId) => {
   try {
+    console.log(`Fetching transcript for meeting: ${meetingId}`);
+    
+    // TODO: Replace with actual Zoom API call when available
+    // For now, use mock data
+    return getMockTranscript(meetingId);
+    
+    /* REAL IMPLEMENTATION (Uncomment when Zoom API is available)
     const token = generateZoomToken();
     
     const response = await axios.get(
@@ -62,6 +71,7 @@ const fetchTranscript = async (meetingId) => {
     });
     
     return parseTranscript(transcriptResponse.data);
+    */
   } catch (error) {
     console.error('Error fetching Zoom transcript:', error.message);
     throw new Error(`Failed to fetch transcript: ${error.message}`);
