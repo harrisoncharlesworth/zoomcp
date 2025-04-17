@@ -38,6 +38,9 @@ After setting up your configuration, test it by:
 
 ```
 /zoom-transcript-mcp/amp/zoom/summary?meetingId=YOUR_MEETING_ID
+/zoom-transcript-mcp/amp/zoom/action-items?meetingId=YOUR_MEETING_ID
+/zoom-transcript-mcp/amp/zoom/decisions?meetingId=YOUR_MEETING_ID
+/zoom-transcript-mcp/amp/events
 ```
 
 ## Sample AMP Component Usage

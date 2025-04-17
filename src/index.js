@@ -8,28 +8,38 @@ require('dotenv').config();
 const express = require('express');
 const { zoomRouter } = require('./routes/zoom');
 const { eventsRouter, broadcastEvent } = require('./routes/events');
+const { ampRouter } = require('./routes/amp-routes');
 const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Server name for AMP integration
+const SERVER_NAME = 'zoom-transcript-mcp';
+
 app.use(express.json());
 
-// Health check endpoint
-app.get('/health', (req, res) => {
+// Health check endpoint - support both direct and prefixed routes
+app.get(['/health', `/${SERVER_NAME}/health`], (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-// API routes
+// API routes - support both direct and prefixed routes
 app.use('/api/zoom', zoomRouter);
+app.use(`/${SERVER_NAME}/api/zoom`, zoomRouter);
 app.use('/api/events', eventsRouter);
+app.use(`/${SERVER_NAME}/api/events`, eventsRouter);
 
 // Create global broadcast event function to avoid circular dependencies
 global.mcp = global.mcp || {};
 global.mcp.broadcastEvent = broadcastEvent;
 
-// AMP compatible endpoints
-app.get('/amp/events', (req, res) => {
+// Set up AMP routes
+app.use('/amp/zoom', ampRouter);
+app.use(`/${SERVER_NAME}/amp/zoom`, ampRouter);
+
+// AMP events endpoint - support both direct and prefixed routes
+app.get(['/amp/events', `/${SERVER_NAME}/amp/events`], (req, res) => {
   // Set headers for SSE with AMP compatibility
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -54,32 +64,12 @@ app.get('/amp/events', (req, res) => {
   });
 });
 
-app.get('/amp/zoom/summary', async (req, res) => {
-  try {
-    const { meetingId, date, participant } = req.query;
-    
-    if (!meetingId) {
-      return res.status(400).json({ 
-        error: 'Missing required parameter: meetingId' 
-      });
-    }
-    
-    // Return AMP-compatible format
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    
-    const summaryData = await require('./services/zoom').getMeetingSummary(meetingId, date, participant);
-    res.status(200).json({
-      version: '0.1',
-      content: summaryData
-    });
-  } catch (error) {
-    console.error('Error generating meeting summary:', error);
-    res.status(500).json({ 
-      version: '0.1',
-      error: 'Failed to generate meeting summary' 
-    });
-  }
+// AMP routes are now handled by the ampRouter
+
+// Catch-all route for debugging missing endpoints
+app.get('*', (req, res, next) => {
+  console.log(`[DEBUG] Request to unknown endpoint: ${req.path}`);
+  next(); // Let the regular 404 handling take over
 });
 
 // Error handling middleware
