@@ -1,0 +1,13 @@
+{
+  "mcp": {
+    "serverName": "zoom-transcript-mcp",
+    "command": "http://localhost:3000",
+    "arguments": [],
+    "environmentVariables": {
+      "ZOOM_CLIENT_ID": "your_zoom_client_id",
+      "ZOOM_CLIENT_SECRET": "your_zoom_client_secret",
+      "ZOOM_ACCOUNT_ID": "your_zoom_account_id",
+      "PORT": "3000"
+    }
+  }
+}
